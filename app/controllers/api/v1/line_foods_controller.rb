@@ -1,10 +1,10 @@
 module Api
   module V1
     class LineFoodsController < ApplicationController
-      before_action :set_food, only: %i[create] #onlyオプションをつけることで、特定のアクションの実行前にだけ追加することができる。
+      before_action :set_food, only: %i[create replace] #onlyオプションをつけることで、特定のアクションの実行前にだけ追加することができる。
       
       def index
-        line_food = LineFood.active #LineFoodモデルの中からactiveなものを取得して、変数に代入している
+        line_foods = LineFood.active #LineFoodモデルの中からactiveなものを取得して、変数に代入している
         #モデル名.scope名という形でactive: trueなLineFoodの一覧がActiveRecord_Relationの形で取得
         if line_foods.exists? #.existsメソッドは対象のインスタンスのデータがDBに存在するかどうかの確認
           render json: { #正常パターンとしてデータを返す
@@ -12,7 +12,7 @@ module Api
             #登録されているLineFoodのidを配列型式にしています。Rubyの.mapメソッドは配列やハッシュオブジェクトなどを一つずつ取り出し、.mapより後ろのブッロクを当てている
             restaurant: line_foods[0].restaurant,
             #一つの仮注文につき一つの店舗という仕様のため、line_foodの中にある先頭のline_foodインスタンスの店舗の情報を詰めています。
-            count: line_fods.sum { |line_food| line_food[:count] },
+            count: line_foods.sum { |line_food| line_food[:count] },
             #各line_foodインスタンスには数量を表す:countがあります。フロントエンドにはそれぞれの数量を返して、フロント側で合算するという方法もある。
             amount: line_foods.sum { |line_food| line_food.total_amount }, 
             #最後のamountには各line_foodがインスタンスメソッドtotal_amountを呼んで、またその数値を合算している。これは「数量*単価」のさらに合計を計算している。
@@ -46,6 +46,25 @@ module Api
           render json: {}, status: :internal_server_error
         end
       end
+
+      def replace
+        LineFood.active.other_restaurant(@ordered_food.restaurant.id).each do |line_food|
+        #他店舗のactiveなLineFood一覧をLineFood.active.other_restaurant(@ordered_food.restaurant.id)で取得し、そのままeachに渡します。
+          line_food.update_attribute(:active, false)
+          #他店舗のLineFood一つずつに対してupdate_attributeで更新しています。更新内容は因数に渡された(:active, false)で、line_food.activeをfalseにするという意味です
+        end
+
+        set_line_food(@ordered_food)
+
+        if @line_food.save
+          render json: {
+            line_food: @line_food
+          }, status: :created
+        else
+          render json: {}, status: :internal_server_error
+        end
+      end
+
 
       private
 
