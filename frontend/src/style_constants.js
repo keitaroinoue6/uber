@@ -10,3 +10,5 @@ export const FONT_SIZE = {
   BODY1: '16px',
   BODY2: '14px',
 }
+
+//background-color: ${COLORS.SUB_BUTTON}; このようにボタンの背景を定義するのに参照する
