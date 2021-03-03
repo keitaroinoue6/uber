@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
-import { fetchRestaurants } from '../apis/restaurant';
+import { fetchRestaurants } from '../apis/restaurants';
 
 export const Restaurants = () => {
   useEffect(() => {
