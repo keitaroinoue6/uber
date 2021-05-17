@@ -1,13 +1,11 @@
 import React, { Fragment } from 'react';
 
-export const Foods = ({
-  match
-}) => {
-  return (
+export const Foods = (props) => {
+  return(
     <Fragment>
       フード一覧
       <p>
-      restaurantsIdは {match.params.restaurantsId} です
+        RestaurantIdは{props.match.params.restaurantId}です
       </p>
     </Fragment>
   )

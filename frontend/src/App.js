@@ -37,7 +37,7 @@ function App() {
         </Route>
         <Route
           exact
-          path="/restaurants/:restaurantsId/foods" //パラメータとして設定したい部分は:paramNameと: をつけます
+          path="/restaurants/:restaurantsId/foods" //パラメータとして設定したい部分は:paramsNameと: をつけます
           render={({ match }) => //コンポーネントにmatchというpropsを渡しながら、設定したPATHに対応するリクエストがあった場合にパラメーターと一緒にコンポーネントをレンダリングします
             <Foods
               match={match}
